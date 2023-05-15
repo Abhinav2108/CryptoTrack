@@ -1,0 +1,30 @@
+package com.example.cryptotrack.domain.use_cases
+
+import com.example.cryptotrack.domain.model.Coin
+import com.example.cryptotrack.domain.repository.CoinRepository
+import com.example.cryptotrack.utils.ResponseState
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import retrofit2.HttpException
+import java.io.IOException
+import javax.inject.Inject
+
+class GetCoinsUseCase @Inject constructor(private val repository: CoinRepository) {
+
+    operator fun invoke(page:String): Flow<ResponseState<List<Coin>>> = flow{
+        try {
+            emit(ResponseState.Loading())
+            val coinList = repository.getAllCoins(page).map {
+                it.toCoin()
+            }
+            emit(ResponseState.Success(coinList))
+        }
+        catch (e: HttpException){
+            emit(ResponseState.Error(message = "${e.localizedMessage}"))
+        }
+        catch (e: IOException){
+            emit(ResponseState.Error(message = "Input Output Exception Occurred"))
+        }
+    }
+
+}
