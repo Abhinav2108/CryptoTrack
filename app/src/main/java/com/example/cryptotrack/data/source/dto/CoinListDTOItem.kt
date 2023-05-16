@@ -20,7 +20,7 @@ data class CoinListDTOItem(
     val market_cap: Long,
     val market_cap_change_24h: Double,
     val market_cap_change_percentage_24h: Double,
-    val market_cap_rank: Int,
+    val market_cap_rank: Double,
     val max_supply: Double,
     val name: String,
     val price_change_24h: Double,

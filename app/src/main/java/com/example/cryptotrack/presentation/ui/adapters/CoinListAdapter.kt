@@ -1,5 +1,7 @@
 package com.example.cryptotrack.presentation.ui.adapters
 
+import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,9 +13,10 @@ import coil.load
 import com.example.cryptotrack.R
 import com.example.cryptotrack.databinding.CurrencyListLayoutBinding
 import com.example.cryptotrack.domain.model.Coin
+import com.example.cryptotrack.presentation.ui.fragments.HomeFragment
 import com.example.cryptotrack.presentation.ui.fragments.HomeFragmentDirections
 
-class CoinListAdapter : RecyclerView.Adapter<CoinListAdapter.CoinListViewHolder>() {
+class CoinListAdapter(private val context: Context) : RecyclerView.Adapter<CoinListAdapter.CoinListViewHolder>() {
 
     private val coinListCallback = object : DiffUtil.ItemCallback<Coin>() {
         override fun areItemsTheSame(oldItem: Coin, newItem: Coin): Boolean {
@@ -39,7 +42,9 @@ class CoinListAdapter : RecyclerView.Adapter<CoinListAdapter.CoinListViewHolder>
             cardImage.load(coinPosition.image)
             coinName.text = coinPosition.name
             itemView.setOnClickListener {
-                val direction = HomeFragmentDirections.actionHomeFragmentToDetailsFragment()
+                val intent = Intent(context,HomeFragment::class.java)
+                val id = intent.getStringExtra(coinPosition.id)
+                val direction = HomeFragmentDirections.actionHomeFragmentToDetailsFragment(coinPosition.id)
                 it.findNavController().navigate(direction)
             }
         }

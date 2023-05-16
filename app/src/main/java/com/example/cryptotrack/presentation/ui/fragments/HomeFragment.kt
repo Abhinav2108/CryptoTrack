@@ -1,6 +1,7 @@
 package com.example.cryptotrack.presentation.ui.fragments
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +13,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.room.util.query
 import com.example.cryptotrack.R
 import com.example.cryptotrack.databinding.FragmentHomeBinding
+import com.example.cryptotrack.domain.model.Coin
 import com.example.cryptotrack.presentation.ui.adapters.CoinListAdapter
 import com.example.cryptotrack.presentation.viewmodels.CoinListViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -19,11 +21,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import java.util.*
+import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
     private lateinit var homeBinding: FragmentHomeBinding
     private lateinit var coinAdapter: CoinListAdapter
+    private lateinit var coinDataList: List<Coin>
     private val page = 1
     private val coinListViewModel: CoinListViewModel by viewModels()
 
@@ -35,7 +40,8 @@ class HomeFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_home, container, false)
 
         homeBinding = FragmentHomeBinding.bind(view)
-        coinAdapter = CoinListAdapter()
+        coinAdapter = CoinListAdapter(requireContext())
+
 
         return view
     }
@@ -44,18 +50,19 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         requestApi()
         setUpRecyclerView()
-//        homeBinding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
-//            override fun onQueryTextSubmit(p0: String?): Boolean {
-//                homeBinding.searchView.clearFocus()
-//                if ()
-//            }
-//
-//            override fun onQueryTextChange(p0: String?): Boolean {
-//                TODO("Not yet implemented")
-//            }
-//        })
-    }
 
+        homeBinding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
+            override fun onQueryTextSubmit(p0: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(p0: String?): Boolean {
+                createFilterList(p0!!)
+                return true
+            }
+        })
+
+    }
     private fun requestApi(){
         coinListViewModel.getAllCoins(page.toString())
         CoroutineScope(Dispatchers.Main).launch {
@@ -71,9 +78,12 @@ class HomeFragment : Fragment() {
                     it.coinList.isNotEmpty() ->{
                         homeBinding.progressBar.visibility = View.GONE
                         coinAdapter.coinDifferCallback.submitList(it.coinList)
+                        coinDataList = coinAdapter.coinDifferCallback.currentList
+                        Log.d("SECOND LIST", "${coinDataList}")
                     }
                 }
             }
+
         }
     }
     private fun setUpRecyclerView() {
@@ -83,4 +93,21 @@ class HomeFragment : Fragment() {
         }
     }
 
+    private fun createFilterList(text: String){
+        val filteredList = ArrayList<Coin>()
+        for (coin in coinDataList){
+            if (coin.name.lowercase().contains(text.lowercase())){
+                filteredList.add(coin)
+            }
+        }
+
+        if (filteredList.isEmpty()){
+            Toast.makeText(requireContext(), "No Items found!", Toast.LENGTH_SHORT).show()
+        }
+        else{
+            coinAdapter.coinDifferCallback.submitList(filteredList as List<Coin>)
+        }
+    }
 }
+
+

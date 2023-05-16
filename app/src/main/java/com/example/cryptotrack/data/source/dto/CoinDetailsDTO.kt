@@ -5,9 +5,9 @@ import com.example.cryptotrack.domain.model.CoinDetails
 data class CoinDetailsDTO(
     val additional_notices: List<Any>,
     val asset_platform_id: Any,
-    val block_time_in_minutes: Int,
+    val block_time_in_minutes: Double,
     val categories: List<String>,
-    val coingecko_rank: Int,
+    val coingecko_rank: Double,
     val coingecko_score: Double,
     val community_data: CommunityData,
     val community_score: Double,
@@ -24,7 +24,7 @@ data class CoinDetailsDTO(
     val links: Links,
     val liquidity_score: Double,
     val localization: Localization,
-    val market_cap_rank: Int,
+    val market_cap_rank: Double,
     val market_data: MarketData,
     val name: String,
     val platforms: Platforms,
@@ -36,7 +36,7 @@ data class CoinDetailsDTO(
     val status_updates: List<Any>,
     val symbol: String,
     val tickers: List<Ticker>,
-    val watchlist_portfolio_users: Int
+    val watchlist_portfolio_users: Double
 ){
     fun toCoinDetails(): CoinDetails{
         return CoinDetails(

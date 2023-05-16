@@ -3,7 +3,7 @@ package com.example.cryptotrack.domain.model
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
-@Parcelize
+
 data class CoinDetails(
     val id: String,
     val image: String,
@@ -13,4 +13,4 @@ data class CoinDetails(
     val high_24h: Double,
     val low_24h: Double,
     val description: String
-): Parcelable
+)
